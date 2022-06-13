@@ -27,7 +27,7 @@ jobs:
       - name: Get app path
         id: app-path
         run: |
-          path=$(find build/reports/ -name '*' -type f | head -1)
+          path=$(find **/Build/Products/Debug-iphonesimulator/ -name '*.app' -type f | head -1)
           echo "::set-output name=path::$path"
       - name: Upload app file
         uses: actions/upload-artifact@v2
