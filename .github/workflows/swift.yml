@@ -22,7 +22,7 @@ jobs:
             ${{ runner.os }}-pods-
       - run: pod install
       - name: Build
-        run: xcodebuild -workspace RealmToDo.xcworkspace -scheme RealmToDo -configuration Debug -target RealmToDo
+        run: xcodebuild -workspace RealmToDo.xcworkspace -scheme RealmToDo -configuration Debug -target RealmToDo -sdk iphonesimulator
         
       - name: Get app path
         id: app-path
