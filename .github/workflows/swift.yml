@@ -24,7 +24,7 @@ jobs:
             ${{ runner.os }}-pods-
       - run: pod install
       - name: Build
-        run: xcodebuild -workspace RealmToDo.xcworkspace -scheme RealmToDo -configuration Debug -output_name File.basename(ENV['IPA_OUTPUT_PATH']) -sdk iphonesimulator
+        run: xcodebuild -workspace RealmToDo.xcworkspace -scheme RealmToDo -configuration Debug -sdk iphonesimulator
         
       - uses: actions/upload-artifact@v2
         with:
