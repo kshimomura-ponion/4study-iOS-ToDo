@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  DEVELOPER_DIR: /Applications/Xcode_13.3.1.app/Contents/Developer 
+   
 jobs:
   build:
 
@@ -27,7 +30,7 @@ jobs:
       - name: Get app path
         id: app-path
         run: |
-          path=$(find **/build/Debug-iphoneos/ -name '*.app' -type f | head -1)
+          path=$(find derivedData/Build/Products/Debug-iphonesimulator/ -name '*.app' -type f | head -1)
           echo "::set-output name=path::$path"
       - name: Upload app file
         uses: actions/upload-artifact@v2
