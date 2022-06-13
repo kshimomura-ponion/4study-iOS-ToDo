@@ -8,31 +8,34 @@ on:
 
 jobs:
   build:
-    runs-on: macos-lates
+
+    runs-on: macos-latest
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Cache CocoaPods files
-      uses: actions/cache@v1
-      with:
+      - uses: actions/checkout@v2
+      - name: Cache CocoaPods files
+        uses: actions/cache@v1
+        with:
           path: Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
-    - run: pod install
-    - name: Build
-      run: xcodebuild -workspace RealmToDo.xcworkspace -scheme RealmToDo -configuration Debug -sdk iphonesimulator
-    - name: Get app path
-      id: app-path
-      run: |
-        path=$(find **/Build/Products/Debug-iphonesimulator/ -name '*.app' -type f | head -1)
-        echo "::set-output name=path::$path"
-    - name: Upload app file
-      uses: actions/upload-artifact@v1
-      with:
+      - run: pod install
+      - name: Build
+        run: xcodebuild -workspace RealmToDo.xcworkspace -scheme RealmToDo -configuration Debug -sdk iphonesimulator
+        
+      - name: Get app path
+        id: app-path
+        run: |
+          path=$(find **/Build/Products/Debug-iphonesimulator/ -name '*.app' -type f | head -1)
+          echo "::set-output name=path::$path"
+      - name: Upload app file
+        uses: actions/upload-artifact@v2
+        with:
           name: app
           path: ${{ steps.app-path.outputs.path }}
-    - name: Distribute App
-      run: |
+      - name: Distribute App
+        run: |
           curl \
           -H "Authorization: token ${{secrets.DEPLOY_GATE_API_KEY}}" \
           -F "file=@${{ steps.app-path.outputs.path }}" \
