@@ -22,12 +22,12 @@ jobs:
             ${{ runner.os }}-pods-
       - run: pod install
       - name: Build
-        run: xcodebuild -workspace RealmToDo.xcworkspace -scheme RealmToDo -sdk iphonesimulator -configuration Debug build　CONFIGURATION_BUILD_DIR=./app
-        
+        run: xcodebuild -workspace RealmToDo.xcworkspace -scheme RealmToDo -sdk iphonesimulator -configuration Debug build -derivedDataPath ~/build/Debug-iphoneos/
+
       - name: Get app path
         id: app-path
         run: |
-          path=$(find ./app -name '*.app' -type f | head -1)
+          path=$(find ~/build/Debug-iphoneos/ -name '*.app' -type f | head -1)
           echo "::set-output name=path::$path"
       - name: Upload app file
         uses: actions/upload-artifact@v1
