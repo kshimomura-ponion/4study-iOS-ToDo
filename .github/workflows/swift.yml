@@ -1,4 +1,4 @@
-name: Swift
+name: iOS CI/CD
 
 on:
   push:
@@ -12,33 +12,30 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Cache CocoaPods files
-        uses: actions/cache@v1
-        with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-      - run: pod install
-      - name: Build
-        run: xcodebuild -workspace RealmToDo.xcworkspace -scheme RealmToDo -configuration Debug -sdk iphonesimulator
-        
-      - name: Get app path
-        id: app-path
-        run: |
-          path=$(find **/build/outputs/ -name '*' -type f | head -1)
-          echo "::set-output name=path::$path"
-      - name: Upload app file
-        uses: actions/upload-artifact@v2
-        with:
-          name: app
-          path: ${{ steps.app-path.outputs.path }}
-      - name: Distribute App
-        run: |
-          curl \
-          -H "Authorization: token ${{secrets.DEPLOY_GATE_API_KEY}}" \
-          -F "file=@${{ steps.aab-path.outputs.path }}" \
-          -F "message=${{github.event.pull_request.title}}
-          ${{github.event.pull_request.body}}" \
-          "https://deploygate.com/api/users/${{secrets.DEPLOY_GATE_USER_NAME}}/apps"
+    - uses: actions/checkout@v3
+    - name: Select Xcode version 13.2.1
+      run: sudo xcode-select -s '/Applications/Xcode_13.2.1.app/Contents/Developer'
+    - name: Show Xcode version
+      run: xcodebuild -version
+   
+    - name: XCode Build Archive
+      uses: yukiarrr/ios-build-action@v1.5.0
+      with:
+          project-path: 4study-iOS-ToDo.xcodeproj
+          p12-key-base64: ${{ secrets.P12_BASE64 }}
+          certificate-password: ${{ secrets.P12_PASSWORD }}
+          p12-cer-base64: ${{ secrets.P12_CER_BASE64 }}
+          mobileprovision-base64: ${{ secrets.PROVISIONING_PROFILE }}
+          code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
+          team-id: ${{ secrets.TEAM_ID }}
+          workspace-path: 4study-iOS-ToDo.xcworkspace
+          configuration: Debug
+          output-path: app-debug.ipa
+          export-method: development
+    - name: Distribute iOS app
+      run: |
+        curl \
+        -H "Authorization: token ${{secrets.DEPLOY_GATE_API_KEY}}" \
+        -F "file=@/Users/runner/work/4study-iOS-ToDo/4study-iOS-ToDo/app-debug.ipa" \
+        -F "message=・アップロードテスト" \
+        "https://deploygate.com/api/users/${{secrets.DEPLOY_GATE_USER_NAME}}/apps"
