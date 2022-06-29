@@ -13,6 +13,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Cache CocoaPods files
+      uses: actions/cache@v1
+      with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+    - run: pod install
     - name: Select Xcode version 13.2.1
       run: sudo xcode-select -s '/Applications/Xcode_13.2.1.app/Contents/Developer'
     - name: Show Xcode version
@@ -21,14 +29,14 @@ jobs:
     - name: XCode Build Archive
       uses: yukiarrr/ios-build-action@v1.5.0
       with:
-          project-path: 4study-iOS-ToDo.xcodeproj
+          project-path: RealmToDo.xcodeproj
           p12-key-base64: ${{ secrets.P12_BASE64 }}
           certificate-password: ${{ secrets.P12_PASSWORD }}
           p12-cer-base64: ${{ secrets.P12_CER_BASE64 }}
           mobileprovision-base64: ${{ secrets.PROVISIONING_PROFILE }}
           code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
           team-id: ${{ secrets.TEAM_ID }}
-          workspace-path: 4study-iOS-ToDo.xcworkspace
+          workspace-path: RealmToDo.xcworkspace
           configuration: Debug
           output-path: app-debug.ipa
           export-method: development
@@ -36,6 +44,6 @@ jobs:
       run: |
         curl \
         -H "Authorization: token ${{secrets.DEPLOY_GATE_API_KEY}}" \
-        -F "file=@/Users/runner/work/4study-iOS-ToDo/4study-iOS-ToDo/app-debug.ipa" \
+        -F "file=@/Users/runner/work/4study-iOS-ToDo/RealmToDo/app-debug.ipa" \
         -F "message=・アップロードテスト" \
         "https://deploygate.com/api/users/${{secrets.DEPLOY_GATE_USER_NAME}}/apps"
