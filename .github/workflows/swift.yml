@@ -3,8 +3,7 @@ name: iOS CI/CD
 on: [workflow_dispatch]
 
 jobs:
-  if_:
-    if: github.event.pull_request.merged == true
+  build-and-deploy:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
