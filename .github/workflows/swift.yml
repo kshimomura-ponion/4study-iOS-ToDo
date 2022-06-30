@@ -1,13 +1,14 @@
 name: iOS CI/CD
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    types:
+      - closed
+    branches: [ master ]
 
 jobs:
-  build:
+  if_merged:
+    if: github.event.pull_request.merged == true
 
     runs-on: macos-latest
 
