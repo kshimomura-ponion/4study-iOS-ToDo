@@ -1,13 +1,9 @@
 name: iOS CI/CD
 
-on:
-  pull_request:
-    types:
-      - closed
-    branches: [ master ]
+on: [workflow_dispatch]
 
 jobs:
-  if_merged:
+  if_:
     if: github.event.pull_request.merged == true
     runs-on: macos-latest
     steps:
